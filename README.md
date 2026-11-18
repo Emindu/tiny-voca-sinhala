@@ -104,6 +104,7 @@ Languages and voices:
 - [apptor-tiny-tts](https://huggingface.co/apptor/apptor-tiny-tts): German.
 - [tiny-voca-it](https://github.com/carbogninalberto/tiny-voca-it): Italian.
 - [zerre-tts](https://github.com/erkinemreta1/zerre-tts): Turkish.
+- [clarvia-tts-tiny](https://huggingface.co/wite-tech/clarvia-tts-tiny): Turkish, ten voices, with its own [phonemizer](https://huggingface.co/wite-tech/clarvia-phonemizer) for numbers, dates and money.
 - [korean-tts](https://github.com/ooodev/korean-tts): Korean, and Korean mixed with English.
 - [slyszeglosy](https://github.com/damaon/slyszeglosy): Polish.
 - [mini-voz](https://github.com/ElMariones/mini-voz): Spanish, with a Castilian accent.
