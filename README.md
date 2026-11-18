@@ -68,6 +68,17 @@ bash fetch_assets.sh /path/to/dizione
 npx wrangler dev
 ```
 
+## Plain JavaScript
+
+An experiment in `js/`: the model and the phonemizer in plain scripts, with no
+libraries. It reads one 8 MB file and runs in the browser, in Node and in Bun.
+
+```bash
+node js/say.mjs "Hello! This is tiny voca." --voice M2 --output hello.wav
+```
+
+See [js/README.md](js/README.md).
+
 ## Training
 
 ```bash
