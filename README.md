@@ -97,7 +97,7 @@ PYTHONPATH=src:tests python -m unittest discover -s tests
 
 ## Community
 
-Built by other people on top of tiny-voca. I have not tested them.
+Built by other people on top of tiny-voca.
 
 Languages and voices:
 
