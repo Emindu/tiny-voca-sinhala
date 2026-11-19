@@ -145,6 +145,10 @@ Same idea, other sounds:
 
 - [tinygroove](https://github.com/totomanov/tinygroove): a drum machine with no samples.
 
+Write-ups:
+
+- [Three small TTS models](https://ai.satyajit.si/articles/tiny-tts-roundup): how tiny-voca works, measured next to Kitten TTS and Tontaube on one CPU.
+
 Made something? Open an issue and I will add it.
 
 ## Cost
