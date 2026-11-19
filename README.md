@@ -125,6 +125,7 @@ Languages and voices:
 - [tiny-voca-ptbr](https://github.com/SemFence/tiny-voca-ptbr): Brazilian Portuguese, with its own phonemizer.
 - [tiny-voca-ptbr-kokoro](https://github.com/Haple/tiny-voca-ptbr-kokoro): Brazilian Portuguese, with Kokoro's Brazilian voices as the teacher.
 - [tiny-voca Arabic](https://github.com/BenkadourKhaled/tiny-voca/tree/arabic-halabi-f2): Modern Standard Arabic, trained on a CPU from the Arabic Speech Corpus.
+- [tiny-voca-ar](https://huggingface.co/abdullah/tiny-voca-ar): Modern Standard Arabic, an early version with a [browser demo](https://tiny-voca-ar-site.pages.dev).
 - [Bengali Voice](https://tts.hansda.in/): Bengali script and Romanized Bengali, with a browser demo.
 - [tiny-voca-hindi](https://huggingface.co/RL10x/tiny-voca-hindi): Hindi, one voice with eight speaking styles, and a C++ engine.
 - [tiny-urdu](https://github.com/Zafar205/tiny-urdu): Roman Urdu, with a browser demo.
