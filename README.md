@@ -150,6 +150,7 @@ Same idea, other sounds:
 Write-ups:
 
 - [Three small TTS models](https://ai.satyajit.si/articles/tiny-tts-roundup): how tiny-voca works, measured next to Kitten TTS and Tontaube on one CPU.
+- [tiny-voca review](https://andrew.ooo/posts/tiny-voca-review-4-5m-parameter-cpu-text-to-speech/): what it does well, where it breaks and how to run it.
 
 Made something? Open an issue and I will add it.
 
