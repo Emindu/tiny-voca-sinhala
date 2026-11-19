@@ -139,7 +139,7 @@ Ports and apps:
 - [llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal/tts.md#tiny-voca): runs tiny-voca with `llama-tts`, from [GGUF files](https://huggingface.co/ggml-org/tiny-voca-GGUF).
 - [voca](https://github.com/sultson/voca): a rewrite in Rust.
 - [tiny-voca-esp32s3](https://github.com/ngxson/tiny-voca-esp32s3): runs on an ESP32-S3 microcontroller.
-- [tiny-voca Core ML](https://github.com/razorback16/tiny-voca/tree/coreml-ane): runs on the Apple Neural Engine, with a Swift package.
+- [tiny-voca-ane](https://github.com/razorback16/tiny-voca-ane): runs on the Apple Neural Engine with Core ML, with a Swift package.
 - [tiny-voca-dashboard](https://github.com/kleenpulse/tiny-voca-dashboard): a local dashboard.
 - [tinyvoca](https://github.com/spurious-cox/tinyvoca): a Mac app.
 - [tiny-voca-esp32s3](https://github.com/ngxson/tiny-voca-esp32s3): ESP32-S3 port.
