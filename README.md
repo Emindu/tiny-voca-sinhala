@@ -126,6 +126,7 @@ Languages and voices:
 - [tiny-voca-ptbr-kokoro](https://github.com/Haple/tiny-voca-ptbr-kokoro): Brazilian Portuguese, with Kokoro's Brazilian voices as the teacher.
 - [tiny-voca Arabic](https://github.com/BenkadourKhaled/tiny-voca/tree/arabic-halabi-f2): Modern Standard Arabic, trained on a CPU from the Arabic Speech Corpus.
 - [Bengali Voice](https://tts.hansda.in/): Bengali script and Romanized Bengali, with a browser demo.
+- [tiny-urdu](https://github.com/Zafar205/tiny-urdu): Roman Urdu, with a browser demo.
 - [alpa](https://huggingface.co/77ethers/alpa): Sanskrit, fine-tuned from tiny-voca on a CPU.
 - [fiato](https://huggingface.co/cfahlgren1/fiato): English, with sighs, exhales and gasps.
 
