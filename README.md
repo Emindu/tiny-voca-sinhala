@@ -114,16 +114,20 @@ Languages and voices:
 
 - [apptor-tiny-tts](https://huggingface.co/apptor/apptor-tiny-tts): German.
 - [apptor-tiny-tts-at](https://huggingface.co/apptor/apptor-tiny-tts-at): Austrian German, with an accent you can turn up or down and a [browser demo](https://tiny-tts.apptor.at).
+- [tiny-voca-de-en](https://huggingface.co/Fraunhofer-IEM/tiny-voca-de-en): German and English, with up to 32 voices in each.
 - [tiny-voca-it](https://github.com/carbogninalberto/tiny-voca-it): Italian.
+- [vocina](https://github.com/OfficinePixel/vocina): Italian, with a browser demo.
 - [zerre-tts](https://github.com/erkinemreta1/zerre-tts): Turkish.
 - [clarvia-tts-tiny](https://huggingface.co/wite-tech/clarvia-tts-tiny): Turkish, ten voices, with its own [phonemizer](https://huggingface.co/wite-tech/clarvia-phonemizer) for numbers, dates and money.
 - [korean-tts](https://github.com/ooodev/korean-tts): Korean, and Korean mixed with English.
 - [tiny-voca-ja-tsukuyomi-chan](https://huggingface.co/ayousanz/tiny-voca-ja-tsukuyomi-chan): Japanese, in Tsukuyomi-chan's voice, under that voice's own terms.
+- [tiny-voca-ja](https://github.com/gachimoto-code/tiny-voca-ja): Japanese, two voices, trained on synthetic speech only.
 - [slyszeglosy](https://github.com/damaon/slyszeglosy): Polish.
 - [tiny-voca-ru](https://github.com/yilbegan/tiny-voca-ru): Russian, with a [browser demo](https://huggingface.co/spaces/egnch/tiny-voca-ru-demo).
 - [tiny-voca-gr](https://huggingface.co/ComputationalLinguisticsPlatform/tiny-voca-gr): Modern Greek, a male and a female voice.
 - [mini-voz](https://github.com/ElMariones/mini-voz): Spanish, with a Castilian accent.
 - [tiny-voca-es](https://github.com/stdevMac/tiny-voca): Spanish from Spain, with a browser demo.
+- [alpa-es](https://huggingface.co/FranciscoCarlosErra/alpa-es): Rioplatense Spanish.
 - [tiny-voca-fr](https://github.com/DanielSuncost/tiny-voca-fr): French, with a browser demo.
 - [tiny-voca-ptbr](https://github.com/SemFence/tiny-voca-ptbr): Brazilian Portuguese, with its own phonemizer.
 - [tiny-voca-ptbr-kokoro](https://github.com/Haple/tiny-voca-ptbr-kokoro): Brazilian Portuguese, with Kokoro's Brazilian voices as the teacher.
@@ -132,8 +136,11 @@ Languages and voices:
 - [tiny-voca-he](https://github.com/buzagloidan/tiny-voca-he): Hebrew, one male voice, with a browser demo.
 - [Bengali Voice](https://tts.hansda.in/): Bengali script and Romanized Bengali, with a browser demo.
 - [tiny-voca-hindi](https://huggingface.co/RL10x/tiny-voca-hindi): Hindi, one voice with eight speaking styles, and a C++ engine.
+- [tui-voice-mini-ml](https://huggingface.co/Cyrax321/tui-voice-mini-ml): Malayalam, an early preview.
 - [tiny-urdu](https://github.com/Zafar205/tiny-urdu): Roman Urdu, with a browser demo.
 - [Kurdish Behdînî Voice](https://behdinan.com/): Kurdish Behdînî, 21 voices, with a browser demo.
+- [tiny-voca Kiswahili](https://huggingface.co/adoamesh/tiny-voca-swahili): Swahili, runs offline on a low-end Android phone.
+- [SobbieTTS](https://huggingface.co/PatnaikAshish/SobbieTTS): English, an expressive voice.
 - [alpa](https://huggingface.co/77ethers/alpa): Sanskrit, fine-tuned from tiny-voca on a CPU.
 - [fiato](https://huggingface.co/cfahlgren1/fiato): English, with sighs, exhales and gasps.
 
@@ -141,11 +148,16 @@ Ports and apps:
 
 - [llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/docs/multimodal/tts.md#tiny-voca): runs tiny-voca with `llama-tts`, from [GGUF files](https://huggingface.co/ggml-org/tiny-voca-GGUF).
 - [voca](https://github.com/sultson/voca): a rewrite in Rust.
+- [tiny-voca-rust](https://github.com/muzapparjan/tiny_voca_rust): another Rust port.
+- [audio.cpp](https://github.com/0xShug0/audio.cpp/blob/main/docs/models/tiny_voca.md): runs tiny-voca in C++ with ggml.
+- [voca-server](https://github.com/Wereling1992/voca-server): a server with an OpenAI-compatible API.
 - [tiny-voca-esp32s3](https://github.com/ngxson/tiny-voca-esp32s3): runs on an ESP32-S3 microcontroller.
 - [tiny-voca-ane](https://github.com/razorback16/tiny-voca-ane): runs on the Apple Neural Engine with Core ML, with a Swift package.
 - [tiny-voca-dashboard](https://github.com/kleenpulse/tiny-voca-dashboard): a local dashboard.
 - [tinyvoca](https://github.com/spurious-cox/tinyvoca): a Mac app.
-- [tiny-voca-esp32s3](https://github.com/ngxson/tiny-voca-esp32s3): ESP32-S3 port.
+- [CopySpeech](https://github.com/ilyaizen/CopySpeech): reads your clipboard aloud, with tiny-voca as the default voice.
+- [tiny-voca GUI](https://github.com/IggyLux/tiny-voca-GUI): a simple local web interface.
+- [Tiny-Voca-Pinokio](https://github.com/PierrunoYT/Tiny-Voca-Pinokio): a one-click launcher for Pinokio.
 
 Same idea, other sounds:
 
