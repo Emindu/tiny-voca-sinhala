@@ -120,6 +120,7 @@ Languages and voices:
 - [korean-tts](https://github.com/ooodev/korean-tts): Korean, and Korean mixed with English.
 - [tiny-voca-ja-tsukuyomi-chan](https://huggingface.co/ayousanz/tiny-voca-ja-tsukuyomi-chan): Japanese, in Tsukuyomi-chan's voice, under that voice's own terms.
 - [slyszeglosy](https://github.com/damaon/slyszeglosy): Polish.
+- [tiny-voca-ru](https://github.com/yilbegan/tiny-voca-ru): Russian, with a [browser demo](https://huggingface.co/spaces/egnch/tiny-voca-ru-demo).
 - [mini-voz](https://github.com/ElMariones/mini-voz): Spanish, with a Castilian accent.
 - [tiny-voca-es](https://github.com/stdevMac/tiny-voca): Spanish from Spain, with a browser demo.
 - [tiny-voca-fr](https://github.com/DanielSuncost/tiny-voca-fr): French, with a browser demo.
