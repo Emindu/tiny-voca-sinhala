@@ -113,6 +113,7 @@ Built by other people on top of tiny-voca.
 Languages and voices:
 
 - [apptor-tiny-tts](https://huggingface.co/apptor/apptor-tiny-tts): German.
+- [apptor-tiny-tts-at](https://huggingface.co/apptor/apptor-tiny-tts-at): Austrian German, with an accent you can turn up or down and a [browser demo](https://tiny-tts.apptor.at).
 - [tiny-voca-it](https://github.com/carbogninalberto/tiny-voca-it): Italian.
 - [zerre-tts](https://github.com/erkinemreta1/zerre-tts): Turkish.
 - [clarvia-tts-tiny](https://huggingface.co/wite-tech/clarvia-tts-tiny): Turkish, ten voices, with its own [phonemizer](https://huggingface.co/wite-tech/clarvia-phonemizer) for numbers, dates and money.
