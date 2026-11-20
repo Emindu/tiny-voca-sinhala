@@ -154,6 +154,7 @@ Write-ups:
 
 - [Three small TTS models](https://ai.satyajit.si/articles/tiny-tts-roundup): how tiny-voca works, measured next to Kitten TTS and Tontaube on one CPU.
 - [tiny-voca review](https://andrew.ooo/posts/tiny-voca-review-4-5m-parameter-cpu-text-to-speech/): what it does well, where it breaks and how to run it.
+- [AlphaSignal](https://alphasignal.ai/model/tiny-voca-packs-two-ai-voices-into-an-18-mb-model-for-9): a short summary of the model, the data and the limits.
 
 Made something? Open an issue and I will add it.
 
