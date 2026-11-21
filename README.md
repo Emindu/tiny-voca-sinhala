@@ -134,6 +134,7 @@ Languages and voices:
 - [tiny-broca](https://huggingface.co/brenorb/tiny-broca): Brazilian Portuguese, two voices, reads letters with no dictionary, with a [browser demo](https://tiny-broca-demo.pages.dev).
 - [tiny-voca Arabic](https://github.com/BenkadourKhaled/tiny-voca/tree/arabic-halabi-f2): Modern Standard Arabic, trained on a CPU from the Arabic Speech Corpus.
 - [tiny-voca-ar](https://huggingface.co/abdullah/tiny-voca-ar): Modern Standard Arabic, an early version with a [browser demo](https://tiny-voca-ar-site.pages.dev).
+- [tiny-voca-arabic](https://huggingface.co/oddadmix/tiny-voca-arabic): Modern Standard Arabic, trained from scratch, with a [browser demo](https://huggingface.co/spaces/oddadmix/tiny-voca-arabic).
 - [tiny-voca-he](https://github.com/buzagloidan/tiny-voca-he): Hebrew, one male voice, with a browser demo.
 - [Bengali Voice](https://tts.hansda.in/): Bengali script and Romanized Bengali, with a browser demo.
 - [tiny-swara](https://huggingface.co/Xeven7/tiny-swara): Bengali, two voices, trained from scratch on free Kaggle GPUs.
