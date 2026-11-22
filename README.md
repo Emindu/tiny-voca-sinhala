@@ -10,6 +10,8 @@ Muhammed Nazeem. The model architecture and training recipe are unchanged. The t
 front end, data pipeline and voices are new, and the model was trained from scratch on
 about 18 hours of Sinhala speech using free Kaggle GPUs.
 
+**Try it in your browser:** https://huggingface.co/spaces/eminduperera/tiny-voca-sinhala
+
 **Weights, samples and a one-command demo:** https://huggingface.co/eminduperera/tiny-voca-sinhala
 
 | Voice | Speaker | Training audio |
@@ -24,6 +26,7 @@ about 18 hours of Sinhala speech using free Kaggle GPUs.
 | `src/tiny_voca/sinhala.py` | Sinhala front end: Sinhala text → 73 phoneme tokens |
 | `src/tiny_voca/` | The tiny-voca model, alignment, training, inference and ONNX export, with `TINY_VOCA_LANGUAGE=si` support |
 | `scripts/sinhala_data.py` | Downloads the Path Nirvana (and optionally OpenSLR-30) recordings and builds 24 kHz Parquet shards |
+| `playground/` | The Sinhala browser playground: eSpeak NG compiled to WebAssembly, the Sinhala front end in JavaScript, ONNX Runtime Web |
 | `notebooks/` | Two Kaggle notebooks: data preparation (CPU) and alignment + training (GPU) |
 | `tests/test_frontend_sinhala.py` | Front-end tests |
 | `docs/sinhala.md` | Details: front end, data, training commands, limits |
@@ -108,7 +111,6 @@ The command-line equivalent is in [docs/sinhala.md](docs/sinhala.md).
   prosody is less natural.
 - The voices are clear but flatter than large TTS systems.
 - There is no formal evaluation yet (no Sinhala ASR word error rate).
-- There is no browser demo yet. The upstream `web/` and `js/` demos are English only.
 
 ## Licence and credits
 
