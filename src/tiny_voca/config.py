@@ -1,9 +1,15 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 import hashlib
 import json
 
 CHECKPOINT_FORMAT = 4  # 2-3: byte tokens + learned aligner (rejected explicitly).
 ANNOTATION_VERSION = 3
+
+
+def _vocab_size():
+    """Size of the active phoneme inventory (76 English; Sinhala with TINY_VOCA_LANGUAGE=si)."""
+    from .text import SYMBOLS
+    return len(SYMBOLS)
 
 
 def _digest(value):
@@ -20,8 +26,8 @@ class Config:
     f0_min: float = 50.0
     f0_max: float = 600.0
     speakers: tuple[str, ...] = ("F2", "M2")
-    # Phoneme tokens from tiny_voca.text.SYMBOLS (front-end version 3).
-    vocab_size: int = 76
+    # Phoneme tokens from tiny_voca.text.SYMBOLS (76 for English front-end version 3).
+    vocab_size: int = field(default_factory=_vocab_size)
     # Text encoder and frame-level transformer.
     channels: int = 192
     heads: int = 4

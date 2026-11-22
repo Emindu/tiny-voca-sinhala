@@ -308,6 +308,8 @@ def main():
     parser.add_argument("--recorded-voicing", action="store_true", help="Use the pitch tracker's voicing as it is, "
                         "without marking vowel frames voiced")
     parser.add_argument("--no-preload", action="store_true", help="Load feature files lazily instead of before the first step")
+    parser.add_argument("--acoustic-root", type=Path, help="Directory of the acoustic feature files when it has moved since "
+                        "annotation (for example a dataset mounted at another path in a new cloud session)")
     args = parser.parse_args()
     if min(args.steps, args.batch_frames, args.max_batch, args.save_every, args.keep_every, args.log_every, args.crops, args.gan_ramp) < 1:
         parser.error("steps, batch limits and intervals must be positive")
@@ -337,8 +339,8 @@ def main():
     torch.manual_seed(args.seed)
     torch.backends.cuda.matmul.allow_tf32 = True
     torch.backends.cudnn.allow_tf32 = True
-    train = AnnotatedDataset(args.train, c, voiced_vowels=not args.recorded_voicing)
-    validation = AnnotatedDataset(args.validation, c, voiced_vowels=not args.recorded_voicing)
+    train = AnnotatedDataset(args.train, c, args.acoustic_root, voiced_vowels=not args.recorded_voicing)
+    validation = AnnotatedDataset(args.validation, c, args.acoustic_root, voiced_vowels=not args.recorded_voicing)
     check_leakage(train, validation)
     if train.annotation != validation.annotation:
         raise ValueError("train and validation manifests come from different annotation runs")

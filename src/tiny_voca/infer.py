@@ -5,14 +5,15 @@ import re
 import torch
 from .config import CHECKPOINT_FORMAT, Config
 from .model import TinyVoca, UtteranceTooLong
-from .text import FRONTEND_VARIABLE, FRONTENDS, NothingToPronounce, frontend_fingerprint, phonemize, set_frontend
+from .text import FRONTEND_VARIABLE, FRONTENDS, NothingToPronounce, frontend_fingerprint, language, phonemize, set_frontend
 
 # The loudest sample of the audio that ``speak_text`` and the command return.
 PEAK = 0.99
 # Said when no sentence of a text could be read. The browser demo says the same.
-ENGLISH_ONLY = "tiny-voca only reads English for now"
+ENGLISH_ONLY = "tiny-voca only reads Sinhala script with this model" if language() == "si" else "tiny-voca only reads English for now"
 _SPACE = re.compile("[\\s" + chr(0xFEFF) + "]+")    # JavaScript's \s, which the demo uses, takes U+FEFF too
-_SENTENCE_END = re.compile(r"""(?:(?<=[.!?…])|(?<=[.!?…]["')\]]))\s+(?=["'(\[]?[A-Z0-9])""")
+# A new sentence starts with a capital, a digit or a Sinhala letter (U+0D80-U+0DFF).
+_SENTENCE_END = re.compile(r"""(?:(?<=[.!?…])|(?<=[.!?…]["')\]]))\s+(?=["'(\[]?[A-Z0-9\u0D80-\u0DFF])""")
 _NOT_AN_END = re.compile(r"(?:\b(?:mr|mrs|ms|dr|prof|sr|jr|st|vs|etc|no|inc|ltd|co|e\.g|i\.e|a\.m|p\.m)|\b[A-Z])\.$",
                          re.IGNORECASE | re.ASCII)
 _CLAUSE_END = re.compile(r"(?<=[,;:—])\s+")
@@ -174,7 +175,7 @@ def main():
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--text", help="Text of any length; it is read sentence by sentence")
     source.add_argument("--text-file", type=Path, help="Read the text from a file (UTF-8)")
-    parser.add_argument("--voice", choices=("F2", "M2"), default="F2")
+    parser.add_argument("--voice", help="A voice of the checkpoint (default: its first voice; English: F2 or M2)")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--speed", type=float, default=1)
     parser.add_argument("--pitch-shift", type=float, default=0, help="Added to log F0 (0.058 is about one semitone)")
@@ -190,6 +191,9 @@ def main():
     elif FRONTEND_VARIABLE not in os.environ:
         match_frontend(args.checkpoint)
     model = load_model(args.checkpoint, args.device, check_frontend=not args.allow_frontend_mismatch)
+    args.voice = args.voice or model.config.speakers[0]
+    if args.voice not in model.config.speakers:
+        parser.error(f"--voice must be one of {', '.join(model.config.speakers)}")
     text = args.text if args.text is not None else args.text_file.read_text(encoding="utf-8")
     try:
         raw, spoken = speak_text(model, text, args.voice, args.speed, args.pitch_shift, pitch_range=args.pitch_range, peak=None)

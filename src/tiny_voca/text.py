@@ -76,6 +76,29 @@ FALLBACK = {
     "əʊ": ("oʊ",), "eə": ("ɛɹ",), "ɪə": ("iə",), "ʊə": ("ʊɹ",), "aʊɚ": ("aʊ", "ɚ"), "l̩": ("əl",), "m̩": ("ə", "m"),
 }
 
+# Language selection. Sinhala has its own inventory and phonemizer
+# (sinhala.py); the rest of tiny-voca reads SYMBOLS, PHONES and friends from
+# this module, so ``TINY_VOCA_LANGUAGE=si`` switches the whole pipeline. English
+# stays the default and keeps its exact behaviour.
+LANGUAGE_VARIABLE = "TINY_VOCA_LANGUAGE"
+LANGUAGES = ("en", "si")
+_language = os.environ.get(LANGUAGE_VARIABLE, "en")
+if _language not in LANGUAGES:
+    raise ValueError(f"{LANGUAGE_VARIABLE} must be one of {LANGUAGES}, not {_language!r}")
+if _language == "si":
+    from . import sinhala as _si
+    FRONTENDS = ("espeak",)
+    _frontend = "espeak"
+    CONSONANTS, VOWELS, PHONES, SYMBOLS = _si.CONSONANTS, _si.VOWELS, _si.PHONES, _si.SYMBOLS
+    SYMBOL_TO_ID, PHONE_SET, PHONE_IDS = _si.SYMBOL_TO_ID, _si.PHONE_SET, _si.PHONE_IDS
+    VOICELESS, VOWEL_SET, FALLBACK = _si.VOICELESS, _si.VOWEL_SET, _si.FALLBACK
+
+
+def language():
+    """``"en"`` or ``"si"``, chosen with TINY_VOCA_LANGUAGE before import."""
+    return _language
+
+
 _QUOTES = str.maketrans({"‘": "'", "’": "'", "‚": "'", "‛": "'", "`": "'", "´": "'",
                          "“": '"', "”": '"', "„": '"', "‟": '"', "«": '"', "»": '"',
                          "–": "—", "―": "—", "[": "(", "{": "(", "]": ")", "}": ")"})
@@ -124,6 +147,8 @@ def _dizione():
 
 
 def frontend_identity():
+    if _language == "si":
+        return _si.identity()
     if _frontend == "own":
         phonemizer = _dizione()
         return {"frontend_version": phonemizer.VERSION, "phonemizer": "dizione", "symbols": list(SYMBOLS)}
@@ -134,6 +159,9 @@ def frontend_identity():
 def frontend_runtime():
     """What an annotation run records about the exact program behind its
     tokens: the eSpeak version, or the fingerprint of the phonemizer build."""
+    if _language == "si":
+        import importlib.metadata
+        return {"espeak_version": _si.Espeak.version(), "espeakng_loader": importlib.metadata.version("espeakng-loader")}
     if _frontend == "own":
         return {"phonemizer": _dizione().identity()["fingerprint"]}
     return {"espeak_version": espeak_version()}
@@ -144,6 +172,8 @@ def frontend_fingerprint():
 
 
 def normalize_text(text):
+    if _language == "si":
+        text = _si.normalize(text)
     text = unicodedata.normalize("NFKC", text).translate(_QUOTES)
     text = re.sub(r"\.{3,}", "…", text)
     text = re.sub(r"-{2,}|\s-\s", "—", text)
@@ -221,6 +251,8 @@ def parse_espeak(output):
 
 def canonical(phone):
     """Map an eSpeak phoneme to inventory phones; ``None`` when unknown."""
+    if _language == "si":
+        return _si.canonical(phone)
     if phone in PHONE_SET:
         return (phone,)
     if phone in FALLBACK:
@@ -269,6 +301,10 @@ def tokenize(pieces):
 def phonemize(text):
     if not isinstance(text, str) or not text.strip():
         raise ValueError("text must not be empty")
+    if _language == "si":
+        pieces = list(chunks(normalize_text(text)))
+        words = iter(_si.Espeak.words([piece for punctuation, piece in pieces if not punctuation]))
+        return tokenize([(True, piece) if punctuation else (False, next(words)) for punctuation, piece in pieces])
     if _frontend == "own":
         return tokenize(_dizione().pieces(text))
     pieces = []

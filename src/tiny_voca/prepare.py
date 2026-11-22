@@ -9,6 +9,8 @@ No network access: use the HF CLI separately to obtain a pinned dataset snapshot
 """
 
 import argparse
+from collections import deque
+from concurrent.futures import ProcessPoolExecutor
 import fcntl
 import hashlib
 import io
@@ -23,6 +25,16 @@ from .config import Config
 from .journal import append, atomic_json, file_hash, json_safe, recover
 
 MIN_FRAMES = 32
+
+
+class _Failed:
+    """A row rejected before extraction, kept in the queue so the journal stays in source order."""
+
+    def __init__(self, error):
+        self.error = error
+
+    def result(self):
+        raise self.error
 
 
 def records(source):
@@ -66,6 +78,27 @@ def extract(wave, config):
             "prosody": torch.from_numpy(prosody.astype(np.float32))}
 
 
+def save_features(wave, config, speaker_index, temporary, final):
+    """Extract and durably store one recording's features (runs in a worker with --workers > 1)."""
+    sample = extract(wave, config)
+    sample.update(speaker=speaker_index)
+    with open(temporary, "wb") as stream:
+        torch.save(sample, stream)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, final)
+
+
+def _single_thread():
+    """Worker initializer: one math thread per process, so N workers use N cores without oversubscription."""
+    torch.set_num_threads(1)
+    try:
+        from threadpoolctl import threadpool_limits
+        threadpool_limits(1)
+    except ImportError:
+        pass
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inputs", nargs="+", type=Path, required=True)
@@ -75,6 +108,7 @@ def main():
     parser.add_argument("--config", type=Path)
     parser.add_argument("--split", choices=("train", "validation", "test"), required=True)
     parser.add_argument("--resume", action="store_true", help="Skip durably accepted/rejected records from these same inputs")
+    parser.add_argument("--workers", type=int, default=1, help="Processes extracting features in parallel (manifest order is unchanged)")
     args = parser.parse_args()
     c = Config.from_dict(json.loads(args.config.read_text())) if args.config else Config()
     args.output.mkdir(parents=True, exist_ok=True)
@@ -114,6 +148,28 @@ def prepare_split(args, c):
         if not (args.output/entry["path"]).is_file():
             raise ValueError(f"committed feature file is missing: {entry['path']}")
     accepted_count, rejected_count = len(entries), len(rejected)
+    workers = getattr(args, "workers", 1)
+    pool = ProcessPoolExecutor(workers, initializer=_single_thread) if workers > 1 else None
+    pending = deque()   # (record_key, identifier, source, entry, future) in source order
+
+    def settle(limit):
+        """Journal finished extractions in source order until at most ``limit`` are in flight."""
+        nonlocal accepted_count, rejected_count
+        while len(pending) > limit:
+            record_key, identifier, source, entry, future = pending.popleft()
+            try:
+                if future is not None:
+                    future.result()
+            except Exception as error:
+                if entry is not None:       # it was counted as seen when submitted
+                    seen.discard(identifier)
+                append(rejected_stream, {"record_key":record_key, "id":str(identifier), "source":str(source), "reason":f"{type(error).__name__}: {error}"})
+                rejected_count += 1
+            else:
+                # Journal write failures must abort, not masquerade as bad source rows.
+                append(accepted_stream, entry)
+                accepted_count += 1
+
     with manifest.open("a", encoding="utf-8") as accepted_stream, rejects.open("a", encoding="utf-8") as rejected_stream:
         for source_index, source in enumerate(args.inputs):
             for index, row in enumerate(records(source)):
@@ -155,22 +211,19 @@ def prepare_split(args, c):
                              "text_hash":hashlib.sha256(text.strip().encode()).hexdigest(), "text":text,
                              "speaker":speaker, "source_file":str(source), "frames":frames, "provenance":provenance}
                     json.dumps(entry, ensure_ascii=False, allow_nan=False)  # Validate before expensive DSP.
-                    sample = extract(wave, c)
-                    sample.update(speaker=c.speakers.index(speaker))
-                    temporary = feature_dir/(name+".tmp")
-                    with temporary.open("wb") as stream:
-                        torch.save(sample, stream)
-                        stream.flush()
-                        os.fsync(stream.fileno())
-                    os.replace(temporary, feature_dir/name)
+                    job = (wave, c, c.speakers.index(speaker), feature_dir/(name+".tmp"), feature_dir/name)
+                    future = pool.submit(save_features, *job) if pool else None
+                    if pool is None:
+                        save_features(*job)
                 except Exception as error:
-                    append(rejected_stream, {"record_key":record_key, "id":str(identifier), "source":str(source), "reason":f"{type(error).__name__}: {error}"})
-                    rejected_count += 1
+                    pending.append((record_key, identifier, source, None, _Failed(error)))
                 else:
-                    # Journal write failures must abort, not masquerade as bad source rows.
-                    append(accepted_stream, entry)
                     seen.add(identifier)
-                    accepted_count += 1
+                    pending.append((record_key, identifier, source, entry, future))
+                settle(2 * workers if pool else 0)
+        settle(0)
+    if pool:
+        pool.shutdown()
     atomic_json(metadata_path, {"identity":identity, "complete":True, "accepted":accepted_count, "rejected":rejected_count})
     print(json.dumps({"accepted":accepted_count, "rejected":rejected_count, "manifest":str(manifest)}))
     if not accepted_count:

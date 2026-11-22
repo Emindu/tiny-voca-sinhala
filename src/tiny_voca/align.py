@@ -33,7 +33,7 @@ from dataclasses import dataclass
 import math
 import numpy as np
 
-from .text import PHONE_SET, PUNCTUATION, SP, UNK, VOICELESS, VOWEL_SET
+from .text import PHONE_SET, PUNCTUATION, SP, UNK, VOICELESS, VOWEL_SET, language
 
 ALIGNER_MODEL = "facebook/wav2vec2-lv-60-espeak-cv-ft"
 ALIGNER_RATE = 16000
@@ -44,6 +44,9 @@ PAUSING = (",", ".", "?", "!", ";", ":", "—", "…")
 # Every inventory phone is a label of the recogniser (checked when it loads);
 # only the unknown-phone token needs a stand-in.
 ALIGNER_LABEL_FALLBACK = {UNK: "<unk>"}
+if language() == "si":
+    from .sinhala import ALIGNER_LABELS
+    ALIGNER_LABEL_FALLBACK.update(ALIGNER_LABELS)
 
 
 @dataclass(frozen=True)
