@@ -8,6 +8,11 @@ See `tools/README.md` to rebuild the WebAssembly file and the data pack.
 Type Sinhala text and hear it in a male (`M1`) or female (`F1`) voice. Everything runs in your
 browser: nothing is sent to a server.
 
+- Plays each sentence as soon as it is made, with an adjustable pause between sentences
+- Highlights the word being spoken, using the timing the model itself predicts; click a word to replay from it
+- Your own pronunciations (`word = how to say it`), saved in your browser
+- Speed, pitch and intonation controls; download as WAV
+
 - **eSpeak NG 1.52.0** compiled to WebAssembly (`espeak-ng.wasm`), with the Sinhala and English
   data it needs (`espeak-ng-data.bin`). It gives exactly the same phonemes as the Python
   `phonemizer-fork` + `espeakng-loader` setup the model was trained with (checked on 11,604 text pieces).

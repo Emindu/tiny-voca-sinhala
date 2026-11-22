@@ -10,7 +10,7 @@ import { ALPHA, ALNUM, DIGIT, SPACE, COMBINING, FORMAT } from "./unicode-tables.
 // ---- sinhala.py -------------------------------------------------------------------
 export const PAD = "<pad>", BOS = "<bos>", EOS = "<eos>", SP = "<sp>", UNK = "<unk>";
 const SPECIALS = [PAD, BOS, EOS, SP, UNK];
-const PUNCTUATION = [",", ".", "?", "!", ";", ":", '"', "'", "(", ")", "—", "…"];
+export const PUNCTUATION = [",", ".", "?", "!", ";", ":", '"', "'", "(", ")", "—", "…"];
 const CONSONANTS = ["p", "pʰ", "b", "bʰ", "t", "tʰ", "d", "dʰ", "ʈ", "ʈʰ", "ɖ", "ɖʰ", "k", "kʰ", "ɡ", "ɡʰ",
   "tʃ", "tʃʰ", "dʒ", "dʒʰ", "ᵐb", "ⁿd", "ⁿɖ", "ᵑɡ", "m", "n", "ɳ", "ɲ", "ŋ",
   "s", "ʃ", "ʂ", "h", "f", "v", "l", "ɭ", "ɹ", "r", "j", "w"];
@@ -184,15 +184,19 @@ function* chunks(text) {
 }
 
 function tokenize(pieces) {
-  const symbols = [BOS], stress = [0], unknown = [];
+  const symbols = [BOS], stress = [0], unknown = [], groups = [];
+  let pieceIndex = -1;
   for (const [punctuation, value] of pieces) {
     if (punctuation) {
       if (symbols[symbols.length - 1] !== value) { symbols.push(value); stress.push(0); }
       continue;
     }
-    for (const word of value) {
+    pieceIndex++;
+    for (const [wordIndex, word] of value.entries()) {
       const last = symbols[symbols.length - 1];
       if (PHONE_SET.has(last) || last === UNK) { symbols.push(SP); stress.push(0); }
+      const group = { piece: pieceIndex, word: wordIndex, start: symbols.length, end: symbols.length };
+      groups.push(group);
       for (const [phone, level] of word) {
         let mapped = canonical(phone);
         if (mapped === null) { unknown.push(phone); mapped = [UNK]; }
@@ -200,19 +204,30 @@ function tokenize(pieces) {
         if (carrier < 0) carrier = 0;
         mapped.forEach((item, index) => { symbols.push(item); stress.push(index === carrier ? level : 0); });
       }
+      group.end = symbols.length;
     }
   }
   symbols.push(EOS); stress.push(0);
   if (!symbols.some((s) => PHONE_SET.has(s) || s === UNK)) throw new NothingToPronounce("the text has nothing to pronounce");
-  return { symbols, ids: symbols.map((s) => SYMBOL_TO_ID.get(s)), stress, unknown };
+  return { symbols, ids: symbols.map((s) => SYMBOL_TO_ID.get(s)), stress, unknown, groups };
 }
 
 /** One sentence of Sinhala text -> { ids, stress, symbols, unknown }. */
 export function phonemize(espeak, text) {
   if (typeof text !== "string" || !pyStrip(text)) throw new Error("text must not be empty");
   const pieces = [...chunks(normalizeText(text))];
-  const words = espeakWords(espeak, pieces.filter(([p]) => !p).map(([, piece]) => piece))[Symbol.iterator]();
-  return tokenize(pieces.map(([punctuation, piece]) => (punctuation ? [true, piece] : [false, words.next().value])));
+  const texts = pieces.filter(([p]) => !p).map(([, piece]) => piece);
+  const wordLists = espeakWords(espeak, texts);
+  const words = wordLists[Symbol.iterator]();
+  const result = tokenize(pieces.map(([punctuation, piece]) => (punctuation ? [true, piece] : [false, words.next().value])));
+  // For word highlighting: the text pieces eSpeak read and how many words it made of each.
+  result.pieces = texts.map((text, i) => ({ text, spoken: wordLists[i].length }));
+  return result;
+}
+
+/** Text pieces (without punctuation) of a text after normalisation, as phonemize() sees them. */
+export function textPieces(text) {
+  return [...chunks(normalizeText(text))].filter(([p]) => !p).map(([, piece]) => piece);
 }
 
 export function sentences(text) {

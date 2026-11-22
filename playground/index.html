@@ -68,6 +68,18 @@
   .note a { color: var(--maroon); }
   .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
   .facts span { font-size: 13px; background: var(--saffron-soft); color: #6b4410; border-radius: 999px; padding: 3px 11px; }
+  .reader { margin-top: 18px; display: none; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 14px 16px;
+            font: 20px/1.9 "Noto Sans Sinhala", system-ui, sans-serif; max-height: 260px; overflow-y: auto; }
+  .reader.show { display: block; }
+  .reader .w { border-radius: 6px; padding: 1px 2px; cursor: default; transition: background .08s; }
+  .reader.seekable .w[data-t] { cursor: pointer; }
+  .reader.seekable .w[data-t]:hover { background: #f4ede1; }
+  .reader .w.on { background: var(--saffron-soft); box-shadow: inset 0 -2px 0 var(--saffron); }
+  .reader .w.done { color: var(--muted); }
+  .lexicon textarea { min-height: 96px; font-size: 16px; }
+  .hint { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+  .two { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 12px; }
+  @media (prefers-reduced-motion: reduce) { .reader .w { transition: none; } }
   @media (max-width: 560px) { .actions { margin-left: 0; width: 100%; } .actions button.primary { flex: 1; } .wrap { padding-top: 20px; } }
   @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
 </style>
@@ -109,10 +121,21 @@
           <input id="pitch" type="range" min="-4" max="4" step="0.5" value="0"></div>
         <div><label for="range">Intonation · ස්වර රටාව <output id="rangeOut">1.00</output></label>
           <input id="range" type="range" min="0.5" max="1.5" step="0.05" value="1"></div>
+        <div><label for="pause">Pause between sentences · විරාමය <output id="pauseOut">0.35 s</output></label>
+          <input id="pause" type="range" min="0" max="1.5" step="0.05" value="0.35"></div>
+      </div>
+      <div class="two lexicon">
+        <div>
+          <label class="title" for="lexicon">මගේ උච්චාරණ · My pronunciations</label>
+          <textarea id="lexicon" spellcheck="false" placeholder="Google = ගූගල්&#10;WHO = ලෝක සෞඛ්‍ය සංවිධානය&#10;කො = කොළඹ"></textarea>
+          <p class="hint">One per line: <b>word = how to say it</b> (in Sinhala letters). Whole words only, any case. Saved in this browser. <span id="lexCount"></span></p>
+        </div>
       </div>
     </details>
 
     <div class="status" id="status" role="status" aria-live="polite"><span class="dot"></span><span id="statusText">Loading eSpeak NG and the model (about 22 MB, once)…</span><span class="bar"><i id="barFill"></i></span></div>
+
+    <div class="reader" id="reader" lang="si" aria-label="Text being read"></div>
 
     <div class="player" id="player">
       <audio id="audio" controls></audio>
@@ -123,130 +146,12 @@
   <section class="note">
     <p><strong>How it works.</strong> Your text is turned into phonemes by eSpeak NG 1.52 (compiled to WebAssembly, the same version used in training) with Sinhala-specific corrections, then a 4.5M-parameter <a href="https://github.com/n4ze3m/tiny-voca">tiny-voca</a> model makes the audio with ONNX Runtime Web. Nothing is sent to a server.</p>
     <p><strong>Voices.</strong> Ven. Mettananda (M1) and Mrs. Oshadi (F1), from the <a href="https://github.com/pnfo/sinhala-tts-dataset">Path Nirvana Sinhala TTS dataset</a> (GPL-3.0). The speakers donated their voices for non-obscene, non-offensive speech generation only: please do not use this to impersonate them or for deceptive, obscene or offensive content.</p>
+    <p><strong>Words.</strong> The highlighted word follows the timing the model itself predicts for every sound. Add your own readings for names, abbreviations or English words under Options.</p>
     <p><strong>Limits.</strong> Pronunciation follows eSpeak NG's Sinhala rules: digits, abbreviations and Latin-script words come out approximately, and the voices are trained on formal prose.</p>
     <p>Model: <a href="https://huggingface.co/eminduperera/tiny-voca-sinhala">eminduperera/tiny-voca-sinhala</a> · Code: <a href="https://github.com/Emindu/tiny-voca-sinhala">Emindu/tiny-voca-sinhala</a> · Based on tiny-voca by Muhammed Nazeem.</p>
   </section>
 </div>
 
-<script type="module">
-const $ = (id) => document.getElementById(id);
-const EXAMPLES = [
-  "ආයුබෝවන්! ඔබට කොහොමද?",
-  "අද කාලගුණය හොඳයි, ඒත් හවසට වැසි ඇති විය හැකියි.",
-  "ශ්‍රී ලංකාව ඉන්දියන් සාගරයේ පිහිටි සුන්දර දිවයිනකි.",
-  "මම හෙට උදේ කොළඹට යනවා.",
-  "සුබ උපන්දිනයක් වේවා! ඔබට සතුට සහ සෞභාග්‍යය පිරී ඉතිරී යේවා.",
-];
-for (const text of EXAMPLES) {
-  const chip = document.createElement("button");
-  chip.type = "button"; chip.className = "chip"; chip.textContent = text.length > 34 ? text.slice(0, 32) + "…" : text;
-  chip.title = text;
-  chip.onclick = () => { $("text").value = text; speak(); };
-  $("examples").append(chip);
-}
-
-const fmt = { speed: (v) => (+v).toFixed(2) + "×", pitch: (v) => (v > 0 ? "+" : "") + v + " st", range: (v) => (+v).toFixed(2) };
-for (const id of ["speed", "pitch", "range"]) $(id).oninput = () => ($(id + "Out").textContent = fmt[id]($(id).value));
-
-function setStatus(text, state = "", fraction = null) {
-  $("status").className = "status " + state;
-  $("statusText").textContent = text;
-  $("barFill").parentElement.style.display = fraction === null ? "none" : "";
-  if (fraction !== null) $("barFill").style.width = Math.round(fraction * 100) + "%";
-}
-
-const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
-let sampleRate = 24000, ready = false, request = 0, ctx = null, nextTime = 0, chunks = [];
-
-function wav(samples, rate) {
-  const buffer = new ArrayBuffer(44 + samples.length * 2), view = new DataView(buffer);
-  const text = (offset, s) => { for (let i = 0; i < s.length; i++) view.setUint8(offset + i, s.charCodeAt(i)); };
-  text(0, "RIFF"); view.setUint32(4, 36 + samples.length * 2, true); text(8, "WAVEfmt ");
-  view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true);
-  view.setUint32(24, rate, true); view.setUint32(28, rate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true);
-  text(36, "data"); view.setUint32(40, samples.length * 2, true);
-  for (let i = 0; i < samples.length; i++) view.setInt16(44 + i * 2, Math.max(-1, Math.min(1, samples[i])) * 32767, true);
-  return new Blob([buffer], { type: "audio/wav" });
-}
-
-function play(audio) {
-  if (!ctx) return;
-  const buffer = ctx.createBuffer(1, audio.length, sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < audio.length; i++) data[i] = Math.max(-0.99, Math.min(0.99, audio[i]));
-  const source = ctx.createBufferSource();
-  source.buffer = buffer; source.connect(ctx.destination);
-  nextTime = Math.max(nextTime, ctx.currentTime + 0.05);
-  source.start(nextTime);
-  nextTime += buffer.duration;
-}
-
-function stopPlayback() { if (ctx) { ctx.close(); ctx = null; } }
-
-function busy(on) {
-  $("speak").disabled = on || !ready;
-  $("speak").textContent = on ? "සාදමින්…" : "කියවන්න · Speak";
-  $("stop").hidden = !on && !ctx;
-}
-
-function speak() {
-  if (!ready) return;
-  const text = $("text").value.trim();
-  if (!text) { setStatus("Type some Sinhala text first. · සිංහල පෙළක් ඇතුළත් කරන්න.", "error"); return; }
-  stopPlayback();
-  ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate });
-  nextTime = 0; chunks = [];
-  $("player").classList.remove("show");
-  request++;
-  busy(true);
-  setStatus("Preparing…", "", 0);
-  worker.postMessage({
-    type: "speak", id: request, text,
-    voice: document.querySelector("input[name=voice]:checked").value,
-    options: { speed: +$("speed").value, pitchShift: +$("pitch").value * 0.058, pitchRange: +$("range").value },
-  });
-}
-
-worker.onmessage = ({ data }) => {
-  if (data.type === "progress") {
-    const label = data.label === "model" ? `Downloading the model… ${(data.received / 1048576).toFixed(1)} / ${(data.total / 1048576).toFixed(1)} MB` : "Starting the model…";
-    setStatus(label, "", data.received / data.total);
-  } else if (data.type === "ready") {
-    ready = true; sampleRate = data.sampleRate;
-    if (data.step) $("stepFact").textContent = `step ${data.step.toLocaleString("en")}`;
-    setStatus("Ready. Type Sinhala text and press Speak (Ctrl+Enter). · සූදානම්.", "ready");
-    busy(false);
-  } else if (data.id !== request) {
-    return;                                   // a stopped or replaced request
-  } else if (data.type === "sentence") {
-    setStatus(`Speaking sentence ${data.current} of ${data.total}…`, "", (data.current - 1) / data.total);
-  } else if (data.type === "chunk") {
-    chunks.push(data.audio); play(data.audio);
-  } else if (data.type === "done") {
-    const total = chunks.reduce((n, c) => n + c.length, 0), all = new Float32Array(total);
-    let at = 0; for (const c of chunks) { all.set(c, at); at += c.length; }
-    let peak = 0; for (const v of all) peak = Math.max(peak, Math.abs(v));
-    if (peak > 0.99) for (let i = 0; i < all.length; i++) all[i] *= 0.99 / peak;
-    const url = URL.createObjectURL(wav(all, sampleRate));
-    $("audio").src = url; $("download").href = url;
-    $("player").classList.add("show");
-    setStatus(`${data.seconds.toFixed(1)} s of speech made in ${data.took.toFixed(1)} s on this device.`, "ready");
-    busy(false);
-  } else if (data.type === "error") {
-    setStatus(data.message, "error");
-    busy(false);
-  }
-};
-worker.onerror = (event) => setStatus("Could not start: " + (event.message || "worker error"), "error");
-// Errors during loading carry no request id.
-worker.addEventListener("message", ({ data }) => { if (data.type === "error" && !ready) { setStatus("Could not load: " + data.message, "error"); } });
-
-$("speak").onclick = speak;
-$("stop").onclick = () => { request++; stopPlayback(); busy(false); $("stop").hidden = true; setStatus("Stopped.", "ready"); };
-$("text").addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") speak(); });
-
-worker.postMessage({ type: "load" });
-window.tinyVocaWorker = worker;   // used by the automated check
-</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
