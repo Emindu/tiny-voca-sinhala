@@ -84,49 +84,80 @@ function busy(on) {
 }
 
 function addWords(list, chunk) {
+  const box = $("reader"), fragment = document.createDocumentFragment();
   for (const word of list) {
-    if ($("reader").childNodes.length) $("reader").append(" ");
+    if (box.childNodes.length || fragment.childNodes.length) fragment.append(" ");
     const el = document.createElement("span");
     el.className = "w";
     el.textContent = word.text;
-    $("reader").append(el);
+    fragment.append(el);
     if (word.t) {
-      el.dataset.t = "1";
-      const item = { el, chunk, t0: word.t[0], t1: word.t[1] };
-      el.onclick = () => seek(item);
-      words.push(item);
+      el.dataset.i = words.length;
+      words.push({ el, chunk, t0: word.t[0], t1: word.t[1] });
     }
   }
+  box.append(fragment);
 }
+
+// One click handler for the whole box instead of one per word.
+$("reader").addEventListener("click", (event) => {
+  const el = event.target.closest(".w[data-i]");
+  if (el) seek(words[+el.dataset.i]);
+});
 
 function seek(item) {
   if (!$("reader").classList.contains("seekable")) return;
   stopLive(); busy(false);
+  userScrolled = 0;
   $("audio").currentTime = item.chunk.wavStart + item.t0 + 0.03;
   $("audio").play();
 }
 
+// Words are in time order in both timelines (live playback and the WAV), so the current word
+// is found by binary search: cheap even for thousands of words.
+let doneUpTo = 0, userScrolled = 0, autoScrolling = false;
+for (const kind of ["wheel", "touchmove", "keydown"]) $("reader").addEventListener(kind, () => { userScrolled = performance.now(); }, { passive: true });
+$("reader").addEventListener("scroll", () => { if (!autoScrolling) userScrolled = performance.now(); }, { passive: true });
+
+function wordAt(t, live) {
+  const base = (w) => (live ? w.chunk.liveStart : w.chunk.wavStart);
+  let lo = 0, hi = words.length - 1, best = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1, b = base(words[mid]);
+    if (b !== null && b + words[mid].t0 <= t) { best = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  return { index: best, inside: best >= 0 && t < base(words[best]) + words[best].t1 };
+}
+
+function markDone(upTo) {                       // grey out what has been read
+  if (upTo > doneUpTo) for (let i = doneUpTo; i < upTo; i++) words[i].el.classList.add("done");
+  else for (let i = upTo; i < doneUpTo; i++) words[i].el.classList.remove("done");
+  doneUpTo = upTo;
+}
+
+function follow(el) {
+  if (performance.now() - userScrolled < 3000) return;   // the reader is looking elsewhere
+  const box = $("reader");
+  const top = el.offsetTop, bottom = top + el.offsetHeight;
+  if (top >= box.scrollTop + 8 && bottom <= box.scrollTop + box.clientHeight * 0.7) return;
+  autoScrolling = true;
+  box.scrollTo({ top: Math.max(0, top - box.clientHeight / 3), behavior: "smooth" });
+  setTimeout(() => { autoScrolling = false; }, 600);
+}
+
 function highlight() {
+  if (!words.length) return;
   let t = null, live = false;
   const audio = $("audio");
   if (ctx && (!audio.src || audio.paused)) { t = ctx.currentTime; live = true; }
   else if (audio.src && (!audio.paused || audio.currentTime > 0)) t = audio.currentTime;
-  let found = null;
-  if (t !== null) {
-    for (const w of words) {
-      const start = (live ? w.chunk.liveStart : w.chunk.wavStart) + w.t0;
-      const end = (live ? w.chunk.liveStart : w.chunk.wavStart) + w.t1;
-      if (live && w.chunk.liveStart === null) continue;
-      if (t >= start && t < end) { found = w; break; }
-    }
-  }
+  if (t === null) return;
+  const { index, inside } = wordAt(t, live);
+  markDone(Math.max(0, inside ? index : index + 1));
+  const found = inside ? words[index] : null;
   if (found !== current) {
     if (current) current.el.classList.remove("on");
-    if (found) {
-      found.el.classList.add("on");
-      const box = $("reader"), el = found.el;
-      if (el.offsetTop < box.scrollTop || el.offsetTop > box.scrollTop + box.clientHeight - 40) box.scrollTop = el.offsetTop - 60;
-    }
+    if (found) { found.el.classList.add("on"); follow(found.el); }
     current = found;
   }
 }
@@ -141,7 +172,7 @@ function speak() {
   $("audio").pause();
   ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate });
   if (ctx.state === "suspended") ctx.resume().catch(() => {});
-  nextTime = 0; pieces = []; wavCursor = 0; words = []; current = null;
+  nextTime = 0; pieces = []; wavCursor = 0; words = []; current = null; doneUpTo = 0; userScrolled = 0;
   $("reader").textContent = ""; $("reader").className = "reader show";
   $("player").classList.remove("show");
   request++;
