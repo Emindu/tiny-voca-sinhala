@@ -130,7 +130,7 @@ async function speak({ id, text, voice, options, lexicon: entries }) {
   const started = performance.now();
   let produced = 0, index = 0, said = 0;
 
-  const read = async (typedText, last) => {
+  const read = async (typedText, last, sentence) => {
     await new Promise((resolve) => setTimeout(resolve, 0));   // let a "cancel" message in
     if (id <= cancelledThrough) return;
     const typed = typedText.split(" ");
@@ -149,18 +149,19 @@ async function speak({ id, text, voice, options, lexicon: entries }) {
       produced += audio.length;
       said++;
       const words = wordTimes(typed, spoken, phones, durations, secondsPerFrame);
-      postMessage({ type: "chunk", id, index: index++, audio, words, sentenceEnd: last, unknown: phones.unknown }, [audio.buffer]);
+      postMessage({ type: "chunk", id, index: index++, sentence, audio, words, sentenceEnd: last, unknown: phones.unknown }, [audio.buffer]);
       return;
     }
     const parts = shorter(typedText);
     if (!parts.length) throw new Error("one word is too long to speak: " + typedText.slice(0, 40));
-    for (let i = 0; i < parts.length; i++) await read(parts[i], last && i === parts.length - 1);
+    for (let i = 0; i < parts.length; i++) await read(parts[i], last && i === parts.length - 1, sentence);
   };
 
+  postMessage({ type: "plan", id, sentences: all });   // lets the page restart from any sentence
   for (let i = 0; i < all.length; i++) {
     if (id <= cancelledThrough) return;
     postMessage({ type: "sentence", id, current: i + 1, total: all.length });
-    await read(all[i], true);
+    await read(all[i], true, i);
   }
   if (id <= cancelledThrough) return;
   if (!said) throw new Error("Nothing in the text could be read. Please type Sinhala script. / කරුණාකර සිංහල අකුරින් ලියන්න.");

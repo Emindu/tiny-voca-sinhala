@@ -8,10 +8,13 @@ const EXAMPLES = [
   "ශ්‍රී ලංකාව ඉන්දියන් සාගරයේ පිහිටි සුන්දර දිවයිනකි.",
   "මම හෙට උදේ කොළඹට යනවා.",
   "සුබ උපන්දිනයක් වේවා! ඔබට සතුට සහ සෞභාග්‍යය පිරී ඉතිරී යේවා.",
+  ["මැටි කළය · Long story", "මැටි කළය\n\nගමේ කෙළවරේ තිබුණු පුංචි ගෙදරක සුනිල් සීයා ජීවත් වුණා. අවුරුදු පනහකට වැඩි කාලයක් ඔහු මැටියෙන් වළං හැදුවා.\n\nඔහුගේ මිණිපිරිය නෙත්මි. ඒ අවුරුද්දේ ඇය උසස් පෙළ විභාගය අසමත් වුණා. ප්‍රතිඵල ආපු දවසේ ඉඳන් ඇය කාමරයෙන් එළියට ආවේ නැති තරම්. යාළුවෝ විශ්වවිද්‍යාලවලට යන්න සූදානම් වෙද්දී තමන් කිසිම දෙයකට සුදුසු නැහැ කියලා ඇයට හිතුණා.\n\nදවසක් උදේ සීයා ඇගේ කාමරයේ දොරට තට්ටු කළා.\n\n\"දුවේ, අද මට පොඩි උදව්වක් ඕනේ. වළං ටිකක් හදන්න ඕනේ.\"\n\nනෙත්මි අකමැත්තෙන් වුණත් සීයා පස්සේ ගියා. සීයා මැටි ගුලියක් රෝදය උඩ තියලා ඇයට දුන්නා.\n\n\"හදල බලන්න.\"\n\nරෝදය කැරකෙන්න පටන් ගත්තා. ඒත් ඇගේ අත් යටතේ මැටිය ඇද වෙලා එක පැත්තකට කඩාගෙන වැටුණා.\n\n\"මට බෑ සීයේ,\" ඇය කිව්වා.\n\nසීයා හිනා වෙලා ආයෙත් මැටි ගුලියක් තිබ්බා. දෙවෙනි වතාවෙත් වළඳ කඩාගෙන වැටුණා. තුන්වෙනි වතාවේ වළඳට හැඩයක් ආවා. හතරවෙනි වතාවේ ඇය හදපු වළඳ ඇත්තටම ලස්සනට තිබුණා.\n\nහවස සීයා ඒ දවසේ හදපු වළං ඔක්කොම පෝරණුවට දැම්මා. පහුවදා උදේ ගිනි නිවිලා වළං එළියට ගනිද්දී ඒවායින් කිහිපයක් පැලිලා තිබුණා.\n\n\"අයියෝ සීයේ, මහන්සි වෙලා හදපු ඒවා නේද?\" නෙත්මි දුකෙන් කිව්වා.\n\nසීයා පැලුණු වළඳක් අතට අරගෙන හෙමින් කතා කළා:\n\n\"දුවේ, මම අවුරුදු පනහක් වළං හැදුවා. අදටත් සමහර ඒවා ගින්දරේදී පැලෙනවා. ඒත් මම කවදාවත් මැටි අත්හැරියේ නැහැ. පැලුණු වළඳක් කියන්නේ මම වළං හදන්න නොදන්න කෙනෙක් කියන එක නෙවෙයි. ඊළඟ වතාවේ වෙනස් විදිහට හදන්න කියලා ඒකෙන් මට කියා දෙනවා විතරයි.\"\n\nඊට පස්සේ ඔහු ගින්දරෙන් බේරුණු, තද රතු පාට වළඳක් ඇගේ අතට දුන්නා.\n\n\"මේක ශක්තිමත් වුණේ ගින්දරට අහු නොවුණු නිසා නෙවෙයි. ගින්දර ඉවසගෙන හිටපු නිසයි. ඔයාගේ විභාගෙත් ඔහොම ගින්දරක් විතරයි, දුවේ. ඒක ඔයාගේ අවසානය නෙවෙයි.\"\n\nනෙත්මි ඒ වළඳ දිහා ගොඩක් වෙලා බලාගෙන හිටියා. ඒ රෑ, දවස් ගාණකට පස්සේ පළවෙනි වතාවට, ඇය ආයෙත් පොත් ඇරියා.\n\nඊළඟ අවුරුද්දේ ප්‍රතිඵල ආපු දවසේ නෙත්මි දුවගෙන ආවේ සීයාගේ වැඩපොළට. ඇයට විශ්වවිද්‍යාලයට යන්න පුළුවන් තරම් ලකුණු ලැබිලා තිබුණා.\n\nසීයා කිසිම දෙයක් කිව්වේ නැහැ. ඔහු හිනා වෙලා රාක්කයේ තිබුණු, නෙත්මි මුලින්ම හදපු ඒ වළඳ පෙන්නුවා. ඒක තාමත් එතැනම තිබුණා. ශක්තිමත්ව."],
 ];
-for (const text of EXAMPLES) {
+for (const example of EXAMPLES) {
+  const [label, text] = Array.isArray(example) ? example : [null, example];
   const chip = document.createElement("button");
-  chip.type = "button"; chip.className = "chip"; chip.textContent = text.length > 34 ? text.slice(0, 32) + "…" : text;
+  chip.type = "button"; chip.className = "chip" + (label ? " long" : "");
+  chip.textContent = label || (text.length > 34 ? text.slice(0, 32) + "…" : text);
   chip.title = text;
   chip.onclick = () => { $("text").value = text; speak(); };
   $("examples").append(chip);
@@ -47,6 +50,38 @@ const showLexicon = () => {
 };
 $("lexicon").oninput = () => { store.set("lexicon", $("lexicon").value); showLexicon(); };
 showLexicon();
+
+// ---- speed: buttons on the card, synced with the fine slider under Options ----------------
+const SPEEDS = [0.75, 1, 1.25, 1.5];
+function showSpeed() {
+  const v = +$("speed").value;
+  document.querySelectorAll("#speeds button").forEach((b) => {
+    const on = Math.abs(+b.dataset.v - v) < 0.001;
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", on);
+  });
+}
+function setSpeed(v) {
+  $("speed").value = v; $("speedOut").textContent = fmt.speed(v); store.set("speed", v); showSpeed();
+  restartAtCurrentSentence();
+}
+for (const v of SPEEDS) {
+  const b = document.createElement("button");
+  b.type = "button"; b.dataset.v = v; b.textContent = v + "×";
+  b.onclick = () => setSpeed(v);
+  $("speeds").append(b);
+}
+$("speed").addEventListener("change", () => { showSpeed(); restartAtCurrentSentence(); });
+$("speed").addEventListener("input", showSpeed);
+showSpeed();
+
+// A new speed is made by the model itself (natural voice, same pitch), so while something is
+// being read the page reads it again from the current sentence at the new speed.
+function restartAtCurrentSentence() {
+  const playing = (ctx && (!words.length || ctx.currentTime < nextTime)) || !$("audio").paused;
+  if (!ready || !plan.length || !playing) return;
+  const rest = plan.slice(Math.max(0, lastSentence)).join(" ");
+  if (rest.trim()) speak(rest);
+}
 
 // ---- status ----------------------------------------------------------------------------
 function setStatus(text, state = "", fraction = null) {
@@ -115,7 +150,7 @@ function seek(item) {
 
 // Words are in time order in both timelines (live playback and the WAV), so the current word
 // is found by binary search: cheap even for thousands of words.
-let doneUpTo = 0, userScrolled = 0, autoScrolling = false;
+let doneUpTo = 0, userScrolled = 0, autoScrolling = false, lastSentence = 0;
 for (const kind of ["wheel", "touchmove", "keydown"]) $("reader").addEventListener(kind, () => { userScrolled = performance.now(); }, { passive: true });
 $("reader").addEventListener("scroll", () => { if (!autoScrolling) userScrolled = performance.now(); }, { passive: true });
 
@@ -157,22 +192,23 @@ function highlight() {
   const found = inside ? words[index] : null;
   if (found !== current) {
     if (current) current.el.classList.remove("on");
-    if (found) { found.el.classList.add("on"); follow(found.el); }
+    if (found) { found.el.classList.add("on"); follow(found.el); lastSentence = found.chunk.sentence; }
     current = found;
   }
 }
 setInterval(highlight, 40);   // a timer, not animation frames: keeps working when the tab is not being painted
 
-function speak() {
+let plan = [];                          // the sentences of the text being read
+function speak(from = null) {
   if (!ready) return;
-  const text = $("text").value.trim();
+  const text = from === null ? $("text").value.trim() : from;
   if (!text) { setStatus("Type some Sinhala text first. · සිංහල පෙළක් ඇතුළත් කරන්න.", "error"); return; }
   worker.postMessage({ type: "cancel", id: request });       // stop making the previous one
   stopLive();
   $("audio").pause();
   ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate });
   if (ctx.state === "suspended") ctx.resume().catch(() => {});
-  nextTime = 0; pieces = []; wavCursor = 0; words = []; current = null; doneUpTo = 0; userScrolled = 0;
+  nextTime = 0; pieces = []; wavCursor = 0; words = []; current = null; doneUpTo = 0; userScrolled = 0; plan = []; lastSentence = 0;
   $("reader").textContent = ""; $("reader").className = "reader show";
   $("player").classList.remove("show");
   request++;
@@ -188,7 +224,7 @@ function speak() {
 
 function onChunk(data) {
   const pause = data.sentenceEnd ? +$("pause").value : 0;
-  const chunk = { audio: data.audio, wavStart: wavCursor, liveStart: null, pauseAfter: pause };
+  const chunk = { audio: data.audio, wavStart: wavCursor, liveStart: null, pauseAfter: pause, sentence: data.sentence };
   wavCursor += data.audio.length / sampleRate + pause;
   pieces.push(chunk);
   if (ctx) {
@@ -233,6 +269,8 @@ worker.onmessage = ({ data }) => {
     setStatus("Could not load: " + data.message, "error");
   } else if (data.id !== request) {
     return;                                   // a stopped or replaced request
+  } else if (data.type === "plan") {
+    plan = data.sentences;
   } else if (data.type === "sentence") {
     setStatus(`Speaking sentence ${data.current} of ${data.total}…`, "", (data.current - 1) / data.total);
   } else if (data.type === "chunk") {
@@ -247,7 +285,7 @@ worker.onmessage = ({ data }) => {
 worker.onerror = (event) => setStatus("Could not start: " + (event.message || "worker error"), "error");
 
 $("audio").addEventListener("play", () => { stopLive(); $("stop").hidden = true; });
-$("speak").onclick = speak;
+$("speak").onclick = () => speak();
 $("stop").onclick = () => {
   worker.postMessage({ type: "cancel", id: request });
   request++; stopLive(); $("audio").pause(); busy(false); $("stop").hidden = true; setStatus("Stopped.", "ready");

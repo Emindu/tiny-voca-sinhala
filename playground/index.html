@@ -80,6 +80,13 @@
   .hint { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
   .two { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 12px; }
   @media (prefers-reduced-motion: reduce) { .reader .w { transition: none; } .reader { scroll-behavior: auto; } }
+  .speeds { display: inline-flex; align-items: center; gap: 8px; }
+  .speeds-label { font-size: 14px; color: var(--muted); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 12px; padding: 4px; background: #fff; gap: 2px; }
+  .seg button { border: 0; background: transparent; border-radius: 9px; padding: 6px 10px; font: 500 14px/1.2 system-ui, sans-serif; color: var(--ink); cursor: pointer; font-variant-numeric: tabular-nums; }
+  .seg button:hover { background: #f4ede1; }
+  .seg button.on { background: var(--maroon); color: #fff; }
+  .chip.long { border-style: dashed; }
   @media (max-width: 560px) { .actions { margin-left: 0; width: 100%; } .actions button.primary { flex: 1; } .wrap { padding-top: 20px; } }
   @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
 </style>
@@ -105,6 +112,10 @@
       <div class="voices" role="radiogroup" aria-label="Voice">
         <input type="radio" name="voice" id="vM1" value="M1" checked><label for="vM1">පිරිමි<small>M1</small></label>
         <input type="radio" name="voice" id="vF1" value="F1"><label for="vF1">ගැහැණු<small>F1</small></label>
+      </div>
+      <div class="speeds" role="group" aria-label="Speed">
+        <span class="speeds-label">වේගය · Speed</span>
+        <span class="seg" id="speeds"></span>
       </div>
       <div class="actions">
         <button class="ghost" id="stop" type="button" hidden>නවත්වන්න · Stop</button>
