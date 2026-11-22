@@ -14,8 +14,8 @@ about 18 hours of Sinhala speech using free Kaggle GPUs.
 
 | Voice | Speaker | Training audio |
 |---|---|---|
-| `M1` | Ven. Mettananda (male) | ~11.8 h |
-| `F1` | Mrs. Oshadi (female) | ~9 h |
+| `M1` | Ven. Mettananda (male) | ~10.3 h |
+| `F1` | Mrs. Oshadi (female) | ~7.9 h |
 
 ## What's in the repo
 
@@ -97,7 +97,7 @@ The command-line equivalent is in [docs/sinhala.md](docs/sinhala.md).
 | Version | Steps | Notes |
 |---|---:|---|
 | v1 | 39,425 | First release. Data bug: the first Path Nirvana release (Mrs. Oshadi) was labelled as the male voice, so `M1` sometimes spoke at a female pitch. |
-| v2 | 55,000 | v1 fine-tuned with corrected voice labels. **In training.** |
+| v2 | 55,000 | **Current.** v1 fine-tuned for 15,575 more steps (~5.2 h on a T4) with corrected voice labels. A pitch check on 12 sentences per voice now passes: `M1` 106–123 Hz, `F1` 209–252 Hz. |
 
 ## Limitations
 
