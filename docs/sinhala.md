@@ -56,8 +56,9 @@ python -m tiny_voca.train --train annotations/train.jsonl --validation annotatio
   --output runs/sinhala --config data/config.json --steps 40000 --gan-start 8000 --gan-ratio 0.7 --teacher-final 0
 ```
 
-On Kaggle, use the two notebooks `tiny-voca-sinhala-1-data.ipynb` (CPU) and
-`tiny-voca-sinhala-2-train.ipynb` (GPU) instead; they apply this patch themselves.
+On Kaggle, use the two notebooks in `notebooks/` instead: `tiny-voca-sinhala-1-data.ipynb`
+(CPU, about 4 hours) and `tiny-voca-sinhala-2-train.ipynb` (GPU, about 11 hours). They clone
+this repository at a pinned commit.
 
 ## Speaking
 
